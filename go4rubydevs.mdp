@@ -1,0 +1,1300 @@
+%title: Go for Ruby devs
+%author: lzap
+%date: 2022-2-22
+
+-> # Go for Ruby developers
+
+I watched 200+ hours of Go talks so you don't have to.
+
+A talk about different concepts in Ruby and Go.
+
+---
+
+-> # Go for Ruby developers
+
+Name's Lukáš, I've spent about 10 years on a huge Ruby on Rails codebase, I did
+participate in big projects in Java and Perl in the past. I use Go from it's
+Beta for fun and pet projects.
+
+---
+
+-> # Go for Ruby developers
+
+Language background struggle:
+
+* Java or C#: interfaces, structs, nesting
+* Python or JavaScript: types, data validation, generics
+* Ruby or functional: everything
+
+[Kaylyn Gibilterra's](https://www.youtube.com/watch?v=VsACrKv8B1Y) talk.
+
+---
+
+-> # Go for Ruby developers
+
+Go is exactly the opposite of Ruby
+
+---
+
+-> # Ruby <-
+
+Ruby is an interpreted, high-level, general-purpose programming language which
+supports multiple programming paradigms.
+
+Version 1.0 was released in 1996.
+
+---
+
+-> # Go <-
+
+Go is a statically typed, compiled programming language syntactically similar
+to C, but with memory safety, garbage collection, duck (structural) typing, and
+built-in concurrency.
+
+Go adopts some patterns from dynamic languages like type inference, fast
+compilation or package management.
+
+Version 1.0 was released in 2012.
+
+---
+
+-> # Ruby: design principles <-
+
+As described by Yukihiro Matsumoto:
+
+* "true" object-oriented
+* easy-to-use scripting language
+* best features from Lisp, Smalltalk and Perl
+* open for new features
+
+---
+
+-> # Go: design principles <-
+
+Minimum possible set of features:
+
+* static typing and run-time efficiency
+* readability and usability
+* high-performance networking and multiprocessing
+
+"Not a compilation of great features from other languages." and "The design of
+Go 1.x is final," according to Rob Pike (one of the original designers).
+
+---
+
+-> # Ruby: new major features <-
+
+About **20** major features were added in its **26** years history. That's
+approximately 0.74 major feature per year.
+
+---
+
+-> # Go: new major features <-
+
+Exactly **0** major feature were added in its **10** years history.
+
+(The first major language change - type generics - is expected for 1.18 as a
+fully backward-compatible change.)
+
+---
+
+-> # Go: omitted features <-
+
+* implicit type conversions
+* assertions
+* inheritance
+* pointer arithmetics
+* union type
+* generics (until 1.18)
+* others
+
+---
+
+-> # Ruby: types <-
+
+No primitive types, they are objects:
+
+* Numbers (Fixnum, Bignum, Float...)
+* Boolean
+* String
+* Hash
+* Array
+* Symbol
+
+Ruby 3.0 introduced RBS type system which is currently not widely adopted yet.
+
+---
+
+-> # Go: types <-
+
+Golang has the following basic types:
+
+* bool
+* string, rune
+* int, uint (...)
+* byte
+* float, complex
+* array, map
+* pointer
+
+---
+
+-> # Go: types <-
+
+```
+var i int // 0
+var str string // ""
+var b bool // false
+
+i = 1
+b = true
+```
+
+---
+
+-> # Go: types inference <-
+
+```
+anInteger := 1
+aString := "Hello there"
+```
+
+---
+
+-> # Go: pointers <-
+
+```
+var p1 *int // nil
+i := 42
+p1 = &i
+p2 := &i
+fmt.Println(*p1)
+fmt.Println(*p2)
+
+// invalid operation: p1 + 32 (mismatched types *int and int)
+p1 = p1 + 32
+```
+
+No pointer arithmetics.
+
+---
+
+-> # Go: structs <-
+
+```
+type Vertex struct {
+	X, Y int
+}
+
+v := Vertex{1, 1}
+p := &v
+fmt.Println(v.X)
+fmt.Println(p.X)
+```
+
+---
+
+-> # Ruby: arrays <-
+
+Arrays in Ruby are dynamic.
+
+```
+x = Array.new(5)
+y = []
+x[0] = 1
+```
+
+---
+
+-> # Go: arrays and slices <-
+
+Arrays in Go are fixed-size. Slice is a "view" into an array.
+
+```
+var array [42]string
+
+// slice with length 3 and capacity 3
+slice := []int{1, 2, 3}
+
+// slice with length 5 and capacity 10
+slice := make([]int, 5, 10)
+```
+
+Function `append` enlarges capacity if needed.
+
+---
+
+-> # Ruby: hashes <-
+
+```
+h = {}
+h[:symbol] = 1
+h.delete(:symbol)
+```
+
+By the way stackoverflow.com answer to "how to delete a key from hash":
+
+```
+# "Rails has an except/except! method..."
+h.except(:symbol)
+h.except!(:symbol)
+```
+
+---
+
+-> # Go: maps <-
+
+```
+m := make(map[string]int)
+m["user_id"] = 42
+v, ok := m["user_id"] // value, bool
+delete(m, "user_id")
+```
+
+---
+
+-> # Ruby: methods <-
+
+Functions are methods.
+
+```
+def swap(x, y)
+  y, x
+end
+```
+
+---
+
+-> # Go: functions <-
+
+```
+func swap(x, y string) (string, string) {
+	return y, x
+}
+```
+
+---
+
+-> # Go: built-in functions <-
+
+append, cap, close, complex, copy, delete, imag, len, make, new, panic, print,
+println, real, recover
+
+Don't use: print, println they might be removed in future versions, also they print to STDERR!
+
+---
+
+-> # Ruby: everything is expression <-
+
+Everything evaluates to something in Ruby:
+
+```
+def foo
+  1
+end
+```
+
+---
+
+-> # Go: statements and expressions <-
+
+Statement examples:
+
+```
+c := make(chan bool)
+a = 789
+a += 5
+a++ // not an expression like in C
+c <- true
+```
+
+---
+
+-> # Go: statements and expressions <-
+
+Expression examples:
+
+```
+42
+1+1
+f
+
+// can be used in both contexts
+f()
+```
+
+---
+
+-> # Ruby: everything is a object <-
+
+Ruby is object-oriented with inheritance, mixins and metaclasses: `1` is an
+object, `Constant` is an object or module is an object.
+
+```
+class Cicrcle < Shape
+  def draw; end
+end
+```
+
+---
+
+-> # Go: no classes or objects <-
+
+Composition via embedding.
+
+```
+type Point struct {
+	x, y float
+}
+
+type Circle struct {
+	Point
+	radius float
+}
+
+c := Circle{}
+c.x = 1.4
+c.x = 1.5
+c.radius = 10.5
+```
+
+---
+
+-> # Ruby: methods <-
+
+```
+class Person
+  def initialize(name, age)
+    @name = name
+    @age = age
+  end
+
+  def name_with_age
+    "#{@name}, age #{@age}"
+  end
+end
+
+p = Person.new("Luke", 42)
+puts p.name_with_age
+```
+
+---
+
+-> # Go: methods <-
+
+```
+type Person struct {
+	Name string
+	Age int
+}
+
+func (p Person) NameWithAge() string {
+	return fmt.Sprintf("%s, age %d, p.Name, p.Age)
+}
+
+p := Person{"Luke", 42}
+fmt.Println(p.NameWithAge())
+```
+
+There is no `self` like in Ruby, you define "receiver": `p` in this case.
+This is just syntactic sugar, can be written as `NameWithAge(p Person)` too.
+The type does not need to be struct, it can be any primitive type.
+
+---
+
+-> # Go: methods <-
+
+Receiver is copied just like normal function arguments, to modify the data use pointer receiver:
+
+```
+func (p *Person) IncreaseAge() {
+	p.Age = p.Age + 1
+}
+
+// (&p).IncreaseAge()
+p.IncreaseAge()
+```
+
+---
+
+-> # Ruby: abstract classes and interfaces <-
+
+Ruby has no built-in abstract classes or interfaces.
+
+"Tests are better than interfaces."
+
+---
+
+-> # Go: interfaces <-
+
+Go has runtime polymorphism and structural typing (aka duck typing).
+Typical Go pattern are small interfaces which are then combined together:
+
+```
+type Duck interface {
+	Quack() string
+}
+```
+
+---
+
+-> # Go: interfaces <-
+
+An interface type is defined as a set of method signatures.
+A value of interface type can hold any value that implements those methods.
+Interfaces are implemented implicitly.
+
+```
+type Geometry interface {
+	Area() float64
+}
+
+type Rect struct {
+	width, height float64
+}
+
+func (r Rect) Area() float64 {
+	return r.width * r.height
+}
+```
+
+---
+
+-> # Go: interfaces <-
+
+Common pattern: small interfaces, can be optimized by the compiler (stack vs heap)
+
+```
+type Reader interface {
+	Read(p []byte) (n int, err error)
+}
+
+type ReaderAt interface {
+	ReadAt(p []byte, off int64) (n int, err error)
+}
+```
+
+---
+
+-> # Go: interfaces <-
+
+Buffer can be allocated on the stack:
+
+```
+r := strings.NewReader("Stack vs Heap")
+b := make([]byte, 4)
+for {
+	n, err := r.Read(b)
+	if err == io.EOF {
+		break
+	} else {
+		fmt.Printf("%v\n", b)
+	}
+}
+```
+
+---
+
+-> # Ruby: interface assertions <-
+
+To check if object is a class:
+
+```
+obj.is_a?(ClassConstant)
+```
+
+Duck typing is a common Ruby pattern:
+
+```
+if obj.respond_to?(:method)
+  obj.method
+end
+```
+
+---
+
+-> # Go: interface assertions <-
+
+Type assert triggers a panic when not met:
+
+```
+t := i.(T)
+```
+
+To check assertion:
+
+```
+t, ok := i.(T)
+```
+
+---
+
+-> # Go: type switch <-
+
+```
+switch v := i.(type) {
+case T:
+	// here v has type T
+case S:
+	// here v has type S
+default:
+	// no match; here v has the same type as i
+}
+```
+
+Note this is only available in a `switch` block.
+
+---
+
+-> # Ruby: for, while  <-
+
+```
+for i in 1..5 do
+  puts i
+end
+```
+
+```
+while/until true
+  # code to be executed
+end
+```
+
+```
+loop
+  # code to be executed
+end
+```
+
+---
+
+-> # Go: for  <-
+
+```
+for i := 0; i < 10; i++ {
+	// code
+}
+```
+
+```
+sum := 1
+for sum < 1000 {
+	sum += sum
+}
+```
+
+```
+for {
+	// code
+}
+```
+
+---
+
+-> # Go: for  <-
+
+```
+for i, v := range slice {
+	// code
+}
+```
+
+```
+for _, v := range slice {
+	// code
+}
+```
+
+---
+
+-> # Ruby vs Go: if <-
+
+```
+# Ruby
+if true
+  # ...
+end
+```
+
+```
+// Go (no brackets)
+if true {
+	// ...
+}
+```
+
+---
+
+-> # Ruby vs Go: if <-
+
+```
+if (v = x ** n) < lim
+  return v
+end
+```
+
+```
+if v := math.Pow(x, n); v < lim {
+	return v
+}
+```
+
+Very common in Go, variable v is scoped until end of the block.
+
+---
+
+-> # Ruby vs Go: switch <-
+
+Go's switch is like the one in C, except that Go only runs the selected case,
+not all the cases that follow. No `break` is needed then just like in Ruby.
+
+```
+switch {
+	case t.Hour() < 12:
+		fmt.Println("Good morning!")
+	default:
+		fmt.Println("Hello.")
+}
+```
+
+---
+
+-> # Ruby: ensure <-
+
+Not common but possible:
+
+```
+def wite_file
+  file = File.open("output.txt", "w")
+  # ...
+ensure
+  file.close
+end
+```
+
+---
+
+-> # Go: defer <-
+
+```
+f, err := os.Open("/home/joeshaw/notes.txt")
+if err != nil {
+    return err
+}
+defer f.Close()
+```
+
+Warning: Close may return error.
+
+---
+
+-> # Ruby: comparison <-
+
+Classes implements: `eql?`, `equal?`
+
+Operators: `==` and `===`
+
+Optionally: `hash` method
+
+---
+
+-> # Go: comparison <-
+
+Two interface are comparable if either interface value is nil or the underlying type is the same and comparable.
+
+Comparable types: boolean, numeric, string, pointer, channel, interface, struct (*), array (*)
+
+Non comparable types: slice, map, function
+
+(*) if all it’s fields/elements are comparable
+
+---
+
+-> # Go: comparison <-
+
+How to put complex structures into maps? Implement your own hashing function:
+
+```
+m[k.HashKey()] = true
+```
+
+Or use a "primary key" instead:
+
+```
+m[k.ID] = true
+```
+
+Or there are utilities like `cmd.Equal` or `reflect.DeepEqual`.
+
+---
+
+-> # Ruby: exceptions <-
+
+```
+begin
+  # do something
+rescue IOException => e
+  raise("Error occures: #{e.message}")
+end
+```
+
+---
+
+-> # Go: errors <-
+
+Go does not have exceptions, it encourages explicit error checks at the API
+boundaries. It has a built-in mechanism via `panic` and `recover` functions
+(used only in `defer`) but it is not recommended to expose this via API.
+
+Ruby developers, be prepared for the verbosity of explicit error handling.
+Remember, this is a feature of Go, not a bug!
+
+---
+
+-> # Go: errors <-
+
+```
+func TempDir(dir, pattern string) (name string, err error) {
+	// ...
+}
+
+dir, err := ioutil.TempDir("", "temp")
+if err != nil {
+	return fmt.Errorf("failed to create temp dir: %v", err)
+}
+
+if dir, err := ioutil.TempDir("", "temp"); err != nil {
+	fmt.Errorf("failed to create temp dir: %v", err)
+}
+```
+
+---
+
+-> # Go: errors <-
+
+This is frustrating:
+
+```
+n, err := doSomething()
+if err != nil {
+	// handle err
+}
+// compiler error: no new variables on left side of :=
+err := doSomethingAgain()
+if err != nil {
+	// handle err
+}
+```
+
+Solution: `var err error`
+
+---
+
+-> # Go: errors <-
+
+Errors are values.
+
+```
+if err != io.EOF {
+	// ...
+}
+```
+
+---
+
+-> # Go: errors <-
+
+Type `error` is a built-in interface:
+
+```
+type error interface {
+    Error() string
+}
+```
+
+It is very common in Go to have small interfaces (not many functions).
+
+---
+
+-> # Go: errors <-
+
+Custom errors are just implementation of the interface:
+
+```
+type PathError struct {
+	Path string
+}
+
+func (e *PathError) Error() string {
+	return fmt.Sprintf("error in path: %v", e.Path)
+}
+
+```
+
+---
+
+-> # Go: errors <-
+
+Althoug errors are values, checking for custom error types can be useful:
+
+```
+if err != nil {
+	switch e := err.(type) {
+		case *PathError :
+			// Do something with the path
+		default:
+			log.Println(e)
+	}
+}
+```
+
+---
+
+-> # Go: errors <-
+
+String-based errors are typical:
+
+```
+x := errors.New("math: divided by zero")
+
+// wrap error x into e
+e := fmt.Errorf("math: %g cannot be divided by zero", x)
+originalError := e.Unwrap()
+```
+
+---
+
+-> # Go: errors <-
+
+Checking for custom errors via `errors.Is`:
+
+```
+if _, err := os.Open("non-existing"); err != nil {
+	if errors.Is(err, fs.ErrNotExist) {
+		fmt.Println("file does not exist")
+	} else {
+		fmt.Println(err)
+	}
+}
+```
+
+Is reports whether any error in err's chain matches target.
+The chain consists of err itself followed by the sequence of errors obtained by repeatedly calling `Unwrap`.
+An error is considered to match a target if it is equal to that target or if it implements a method Is(error) bool such that Is(target) returns true.
+
+---
+
+-> # Go: errors <-
+
+Checking for custom errors via `errors.As`:
+
+```
+if _, err := os.Open("non-existing"); err != nil {
+	var pathError *fs.PathError
+	if errors.As(err, &pathError) {
+		fmt.Println("Failed at path:", pathError.Path)
+	} else {
+		fmt.Println(err)
+	}
+}
+```
+
+As finds the first error in err's chain that matches target, and if so, sets target to that error value and returns true. Otherwise, it returns false.
+Calls `Unwrap` or `As` similarly as `Is` does.
+
+---
+
+-> # Go: must approach <-
+
+Some libraries do provide `Must...` versions of all methods:
+
+```
+var result sql.Result
+tx := db.MustBegin()
+result, err = tx.Exec("INSERT INTO ...")
+result = tx.MustExec("INSERT INTO ...")
+tx.Commit()
+```
+
+---
+
+-> # Ruby: require and packages <-
+
+Ruby has a free-form require with `$LOAD_PATH`, it is possible to require
+unused files or require already required files.
+
+```
+require "something.rb"
+require "anything/foo.rb"
+require "anything/foo"
+require "lib/is/typical.rb"
+```
+
+---
+
+-> # Ruby: require and packages <-
+
+Ruby has no concept of packages. Solution:
+
+```
+# lib/my_lib.rb:
+require "my_lib/one.rb"
+require "my_lib/two.rb"
+require "my_lib/three/one.rb"
+require "my_lib/three/two.rb"
+
+# app.rb
+require "my_lib"
+```
+
+Navigating large codebases can be difficult.
+
+---
+
+-> # Go: packages <-
+
+A package is a directory with one or more source files compiled together. It is
+enforced by the compiler. Package named "main" compiles to a binary.
+
+Imports follow directory structure, unused imports are not allowed. Navigating
+
+```
+import "net"
+// unused imports will be errors
+// import "fmt"
+
+net.Listen()
+```
+
+---
+
+-> # Go: packages <-
+
+Import is actually a namespace that maps to URL, last element is used for the
+package name.
+
+```
+import "github.com/lzap/ufacter/facts/cpu"
+
+cpu.ReportFacts()
+```
+
+---
+
+-> # Go: packages <-
+
+Package names are typically short, but alias is possible:
+
+```
+import mynet "github.com/lzap/my/net"
+import "net"
+
+net.Listen()
+mynet.MyListen()
+```
+
+---
+
+-> # Ruby: rubygems and bundler <-
+
+Rubygems provides a standard format for distributing Ruby programs and
+libraries. Multiple versions of a same rubygem can be installed alongside each
+other. Rubygems loading (require operation) is very slow for many dependencies.
+
+```
+$ cat example.gemspec
+Gem::Specification.new do |s|
+  s.name        = 'example'
+  s.version     = '0.1.0'
+  s.summary     = "This is an example!"
+  s.files       = ["lib/example.rb"]
+end
+```
+
+---
+
+-> # Ruby: rubygems and bundler <-
+
+Bundler manages an application's dependencies through its entire life across
+many machines systematically and repeatably. It is not part of Ruby default
+installation but de-facto standard for all projects.
+
+```
+$ cat Gemfile
+source 'https://rubygems.org'
+gem "library", "= 1.0.0"
+```
+
+---
+
+-> # Ruby: bundle install <-
+
+Rubygems provides version locking via a lock file.
+
+```
+$ bundle install
+```
+
+---
+
+-> # Go: install modules <-
+
+The similar command in Go is:
+
+```
+$ go get
+```
+
+But we need to elaborate:
+
+---
+
+-> # Go: modules and locking <-
+
+The big difference: Go prefers older versions, dependencies must be explicitly
+bumped.
+
+* A needs C >= 1.14
+* B needs C >= 1.16
+
+* Rubygems: pulls C 1.16
+* Go: pulls C 1.14
+
+---
+
+-> # Go: modules and locking <-
+
+* A needs C >= 1.14
+* B needs C >= 1.16
+* C latest version is 1.18
+
+* Rubygems: pulls C 1.18
+* Go: pulls C 1.14
+
+---
+
+-> # Go: modules <-
+
+A module is a collection of related Go packages that are released together. A
+tool called `go mod` is used to generate, manage and download modules. Modules
+are, unlike rubygems, not centrally distributed. Versions are pinned by default:
+
+```
+$ go mod init example.com/hello
+
+$ cat go.mod
+module example.com/hello
+go 1.16
+require rsc.io/quote v1.5.2
+require rsc.io/sampler/v2 v2.3.0
+```
+
+---
+
+-> # Go: modules <-
+
+To update modules to latest versions:
+
+```
+$ go get -u
+```
+
+To cleanup modules (add new deps, remove unused):
+
+```
+$ go mod tidy
+```
+
+---
+
+-> # Go: modules <-
+
+Go also maintains a file named go.sum containing the expected cryptographic
+hashes of the content of specific module versions:
+
+```
+$ cat go.sum
+rsc.io/quote v1.5.2 h1:w5fcysjrx7yqtD/aO+QwRjYZOKnaM9Uh2b40tElTs3...
+rsc.io/quote v1.5.2/go.mod h1:LzX7hefJvL54yjefDEDHNONDjII0t9xZLPX...
+rsc.io/sampler/v2 v2.3.0 h1:7uVkIFmeBqHfdjD+gZwtXXI+RODJ2Wc4O7MPEh/Q...
+rsc.io/sampler/v2 v2.3.0/go.mod h1:T1hPZKmBbMNahiBKFy5HrXp6adAjACjK9...
+```
+
+---
+
+-> # Go: modules <-
+
+To install modules:
+
+```
+$ git clone ...
+$ go get
+$ go build
+$ go test
+$ go run
+```
+
+Ad-hoc package installation with import detection:
+
+```
+$ go get ./...
+```
+
+---
+
+-> # Ruby: encapsulation <-
+
+No packages, only class-level visibility:
+
+```
+class Foo
+  private
+  def private_method
+  end
+
+  protected
+  def protected_method
+  end
+end
+```
+
+---
+
+-> # Go: exporting <-
+
+In Go, a name is exported if it begins with a capital letter. When importing a
+package, you can refer only to its exported names. Any "unexported" names are
+not accessible from outside the package.
+
+There is no concept of sub-package in go, subdirectory is simply a different
+package.
+
+---
+
+-> # Ruby: concurrency <-
+
+Ruby (and additional libraries) offer many concurrency patterns: threads, green
+threads, events, async, promises and many synchronization techniques.
+
+However, scaling Ruby aplications is a mixed bag due to GIL. Ruby on Rails
+model is traditional thread-based MVC that does not scale well with the default
+CRuby runtime.
+
+Many other Ruby implementations emerged over time trying to approach the
+problem from different angles: JRuby, TruffleRuby, Rubinius and others.
+
+---
+
+-> # Go: concurrency  <-
+
+Goroutine is a lightweight thread managed by the Go runtime. Go does not expose
+OS-level threads to the programmer. Communication (thus synchronization) is
+achieved by channels:
+
+```
+ch := make(chan int)
+bch := make(chan int, 100)
+
+go func() {
+	ch <- 1
+	close(ch)
+}()
+
+go func() {
+	v := <-ch
+}()
+```
+
+---
+
+-> # Go: concurrency  <-
+
+Go runtime provides scheduling capability for goroutines and spawns OS-level
+threads automatically (typically up to amount of CPU cores available). Spawning
+a gouroutine is a cheap operation resulting in production-quality network
+services written in just few lines:
+
+```
+func server() {
+    http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+        w.Write([]byte("<h1>Welcome to my web server!</h1>"))
+    })
+    log.Fatal(http.ListenAndServe(":8080", nil))
+}
+```
+
+---
+
+-> # Ruby: memory management <-
+
+Ruby has a memory management that stores all objects on the heap. The
+implementation suffers from memory fragmentation.
+
+This does not work well with concurrency of Ruby on Rails applications
+(thread-based MVC) and the only good option is to spawn multiple processes of
+an application with pre-forking and/or tweaking Ruby GC parameters.
+
+---
+
+-> # Go: memory management  <-
+
+Go runtime has a modern memory management designed to prevent fragmentation,
+the compiler tries to utilize stack instead of heap as much as possible.
+
+Go runtime has a concurrent mark and sweep garbage collector.
+
+---
+
+-> # Ruby: metaprogramming <-
+
+It's very common to create code on the fly with Ruby:
+
+```
+class Animal
+  ["eat", "walk"].each do |action|
+    define_method(action) do
+      puts "performing #{action}"
+    end
+  end
+end
+```
+
+---
+
+-> # Go: code generation <-
+
+Go does not support metaprogramming and the solution is code generation:
+
+* The gob package uses generators to emit repetitive helper functions for encoding/decoding data.
+* The math/bits package uses a generator to emit fast lookup tables for some of the bitwise operations it provides.
+* net/http is using a generator to emit various HTTP constants.
+* Go built-in tool `go generate` for developers to implement their own generators.
+* Stringer implemenation used for enums.
+
+---
+
+-> # Go: standard tools <-
+
+* `go get` downloads or updates modules or packages
+* `go build` builds a package
+* `go run` builds and runs a binary
+* `go fmt` for formatting code
+* `go vet` is a static analyzer
+* `go test` for unit testing and microbenchmarks
+* `go install` for retrieving and installing remote packages
+* `go mod` for managing project modules and dependencies
+* `godoc` for displaying documentation or serving it via HTTP
+* `gorename` for renaming variables, functions, and so on in a type-safe way
+
+---
+
+-> # Links and credits <-
+
+* Go documentation and blog
+* https://go.dev/tour
+* Wikipedia
+* https://gabrieltanner.org/blog/golang-error-handling-definitive-guide
+* https://eli.thegreenplace.net/2021/a-comprehensive-guide-to-go-generate/
+* https://www.bigbinary.com/learn-rubyonrails-book/rails-macros-and-metaprogramming
+* https://medium.com/safetycultureengineering/an-overview-of-memory-management-in-go-9a72ec7c76a8
+* 200 talks on YouTube :)
