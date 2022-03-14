@@ -230,7 +230,7 @@ Multiple-line comments
 =end
 ```
 
-Documentation DSLs are common.
+Documentation DSLs are common, for example the built-in `rdoc` tool.
 
 ---
 
