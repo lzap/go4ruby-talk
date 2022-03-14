@@ -1,4 +1,4 @@
-%title: Go for Ruby devs
+%title: go for ruby devs
 %author: lzap
 %date: 2022-2-22
 
@@ -7,6 +7,11 @@
 I watched 200+ hours of Go talks so you don't have to.
 
 A talk about different concepts in Ruby and Go.
+
+Assumptions:
+
+* Basic OS-level knowledge (stack/heap, pointer, thread)
+* Ruby knowledge
 
 ---
 
@@ -152,6 +157,18 @@ b = true
 
 ---
 
+-> # Go: variable grouping <-
+
+```
+var (
+	a int
+	b int
+	c int
+)
+```
+
+---
+
 -> # Go: types inference <-
 
 ```
@@ -179,6 +196,114 @@ No pointer arithmetics.
 
 ---
 
+-> # Ruby: naming conventions <-
+
+```
+ClassNames
+method_abc
+variable_xyz
+CONSTANT
+```
+
+---
+
+-> # Go: naming conventions <-
+
+```
+locals
+localVariables
+localTypes
+localFunctions
+ExportedTypes
+ExportedFunctions
+```
+
+---
+
+-> # Ruby: comments <-
+
+```
+# single-line comments
+
+=begin
+Multiple-line comments
+=end
+```
+
+Documentation DSLs are common.
+
+---
+
+-> # Go: comments <-
+
+```
+// Single-line comments are encouraged
+
+/* Only recommended for commenting code blocks */
+
+// Compile parses a regular expression and returns, if successful,
+// a Regexp that can be used to match against text.
+func Compile(str string) (*Regexp, error)
+```
+
+The first sentence is shown by default by `go doc` tool.
+
+---
+
+-> # Ruby: constants <-
+
+```
+Constant = 1
+CONSTANT = 1
+
+# warning: already initialized constant CONSTANT
+CONSTANT = 2
+```
+
+Except little "detail", they can change.
+
+---
+
+-> # Go: constants <-
+
+Literally ARE constants.
+
+```
+const constant := 1
+
+const (
+	WARN = iota
+	ERR = iota
+	FATAL = iota
+)
+```
+
+The first sentence is shown by default by `go doc` tool.
+
+---
+
+-> # Ruby: printing <-
+
+```
+puts "A message"
+printf "A number: %d\n", n
+```
+
+---
+
+-> # Go: printing <-
+
+```
+fmt.Printf("Hello %d\n", 23)
+fmt.Fprint(os.Stdout, "Hello ", 23, "\n")
+fmt.Println("Hello", 23)
+fmt.Println(fmt.Sprint("Hello ", 23))
+```
+
+The first sentence is shown by default by `go doc` tool.
+
+---
+
 -> # Go: structs <-
 
 ```
@@ -186,11 +311,41 @@ type Vertex struct {
 	X, Y int
 }
 
+v := new(Vertex)
+v.X = 1
+v.Y = 1
+```
+
+There are no constructors, memory is guaranteed to be zeroes.  However,
+`make()` does not return zeroed memory it performs explicit initialization of
+maps, slices and channels.
+
+---
+
+-> # Go: structs <-
+
+```
 v := Vertex{1, 1}
 p := &v
 fmt.Println(v.X)
 fmt.Println(p.X)
 ```
+
+Can be also: `v := &Vertex{1, 1}`
+
+---
+
+-> # Go: getters and setters <-
+
+There are none, the recommendation is:
+
+```
+if obj.Name() == nil {
+	obj.SetName("Lukas")
+}
+```
+
+Can be also: `v := &Vertex{1, 1}`
 
 ---
 
@@ -208,7 +363,7 @@ x[0] = 1
 
 -> # Go: arrays and slices <-
 
-Arrays in Go are fixed-size. Slice is a "view" into an array.
+Arrays in Go are fixed-size values. Slice is a "view" into an array.
 
 ```
 var array [42]string
@@ -218,6 +373,10 @@ slice := []int{1, 2, 3}
 
 // slice with length 5 and capacity 10
 slice := make([]int, 5, 10)
+
+// this is a copy!
+newArray := array
+passingIsCopy(newArray) // anoter copy
 ```
 
 Function `append` enlarges capacity if needed.
@@ -360,6 +519,55 @@ c.radius = 10.5
 
 ---
 
+-> # Go: embedding <-
+
+Embedding via pointers is common:
+
+```
+type ReadWriter struct {
+	*Reader
+	*Writer
+}
+```
+
+---
+
+-> # Go: embedding <-
+
+Note composition is possible without embedding too:
+
+```
+type ReadWriter struct {
+	reader *Reader
+	writer *Writer
+}
+```
+
+But then implementation must do manual forwarding:
+
+```
+func (rw *ReadWriter) Read(p []byte) (n int, err error) {
+	return rw.reader.Read(p)
+}
+```
+---
+
+-> # Go: mixed embedding <-
+
+Sometimes explicit field is wanted:
+
+```
+type Job struct {
+	Command string
+	*log.Logger
+}
+
+job.Command = "xyz"
+job.Logger.Fatal("xyz")
+```
+
+---
+
 -> # Ruby: methods <-
 
 ```
@@ -495,6 +703,19 @@ for {
 
 ---
 
+-> # Go: interface embedding <-
+
+Embedding is very common for interfaces just like with structs:
+
+```
+type ReadWriter interface {
+	Reader
+	Writer
+}
+```
+
+---
+
 -> # Ruby: interface assertions <-
 
 To check if object is a class:
@@ -593,14 +814,16 @@ for {
 
 -> # Go: for  <-
 
+Range: array, slice, string, map or channel.
+
 ```
-for i, v := range slice {
+for i, v := range aSlice {
 	// code
 }
 ```
 
 ```
-for _, v := range slice {
+for _, v := range aMap {
 	// code
 }
 ```
@@ -770,9 +993,26 @@ if dir, err := ioutil.TempDir("", "temp"); err != nil {
 
 ---
 
--> # Go: errors <-
+-> # Go: redeclaration/reassignment <-
 
-This is frustrating:
+Variable may appear even if it has already been declared, if:
+
+* same scope
+* assignable
+* there is at least one other variable that is created by the declaration
+
+```
+f, err := os.Open(name)
+d, err := f.Stat()
+```
+
+The above is legit.
+
+---
+
+-> # Go: single value reassignment<-
+
+However, for single values:
 
 ```
 n, err := doSomething()
@@ -964,6 +1204,18 @@ import "net"
 // import "fmt"
 
 net.Listen()
+```
+
+Workaround: `var _ = fmt.Printf.`
+
+---
+
+-> # Go: side-effect import <-
+
+Sometimes you only need to import without use:
+
+```
+import _ "github.com/lib/pq"
 ```
 
 ---
@@ -1209,6 +1461,40 @@ go func() {
 
 -> # Go: concurrency  <-
 
+There are several ways to receive from channels (range, switch):
+
+```
+factsCh := make(chan ufacter.Fact, 1024)
+toClose := len(reporters)
+
+for _, r := range reporters {
+	go r(factsCh)
+}
+
+for f := range factsCh {
+	if f.Name == nil {
+		toClose--
+	} else {
+		Add(f)
+	}
+	if toClose <= 0 {
+		break
+	}
+}
+```
+
+---
+
+-> # Go: concurrency  <-
+
+* Don't overuse channels.
+* Prefer 
+* Take care when passing pointers.
+
+---
+
+-> # Go: concurrency  <-
+
 Go runtime provides scheduling capability for goroutines and spawns OS-level
 threads automatically (typically up to amount of CPU cores available). Spawning
 a gouroutine is a cheap operation resulting in production-quality network
@@ -1239,9 +1525,13 @@ an application with pre-forking and/or tweaking Ruby GC parameters.
 -> # Go: memory management  <-
 
 Go runtime has a modern memory management designed to prevent fragmentation,
-the compiler tries to utilize stack instead of heap as much as possible.
+the compiler tries to utilize stack instead of heap as much as possible.  Go
+runtime use very small stack per goroutine and have ability to expand them on
+demand.
 
 Go runtime has a concurrent mark and sweep garbage collector.
+
+Each Go file can implement one or more `init()` functions for initialization.
 
 ---
 
@@ -1270,6 +1560,9 @@ Go does not support metaprogramming and the solution is code generation:
 * net/http is using a generator to emit various HTTP constants.
 * Go built-in tool `go generate` for developers to implement their own generators.
 * Stringer implemenation used for enums.
+* SQL struct generators
+* SQL migrations libraries
+* many more
 
 ---
 
@@ -1292,9 +1585,9 @@ Go does not support metaprogramming and the solution is code generation:
 
 * Go documentation and blog
 * https://go.dev/tour
-* Wikipedia
 * https://gabrieltanner.org/blog/golang-error-handling-definitive-guide
 * https://eli.thegreenplace.net/2021/a-comprehensive-guide-to-go-generate/
 * https://www.bigbinary.com/learn-rubyonrails-book/rails-macros-and-metaprogramming
 * https://medium.com/safetycultureengineering/an-overview-of-memory-management-in-go-9a72ec7c76a8
-* 200 talks on YouTube :)
+* talks on YouTube (there's a lot!)
+* Wikipedia
