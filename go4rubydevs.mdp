@@ -432,6 +432,40 @@ func swap(x, y string) (string, string) {
 }
 ```
 
+Function overloading is not possible, you cannot define `swap` with different arguments.
+
+---
+
+-> # Ruby: optional or named arguments <-
+
+```
+def method(optional*)
+  optional.first
+  optional.second
+end
+
+def method(name:, age:)
+  puts name
+end
+```
+
+---
+
+-> # Go: variadic <-
+
+Nothing like that in Go, except variadic (represented as array):
+
+```
+func greet(who ...string) {
+	// ...
+}
+
+greet("Joe", "Luke", "Andrew")
+
+s := []string{"James", "Jones"}
+greet(s...)
+```
+
 ---
 
 -> # Go: built-in functions <-
@@ -734,19 +768,22 @@ end
 
 ---
 
--> # Go: interface assertions <-
+-> # Go: interface/type assertions <-
 
 Type assert triggers a panic when not met:
 
 ```
-t := i.(T)
+var x interface{} = 7
+i := x.(int)
 ```
 
 To check assertion:
 
 ```
-t, ok := i.(T)
+t, ok := x.(int)
 ```
+
+Empty interface (`interface{}`) represents anything. With 1.18 there is an predeclared identifier called `any`.
 
 ---
 
@@ -1341,6 +1378,8 @@ require rsc.io/quote v1.5.2
 require rsc.io/sampler/v2 v2.3.0
 ```
 
+File `go.work` overrides `go.mod` (1.18 feature).
+
 ---
 
 -> # Go: modules <-
@@ -1578,6 +1617,22 @@ Go does not support metaprogramming and the solution is code generation:
 * `go mod` for managing project modules and dependencies
 * `godoc` for displaying documentation or serving it via HTTP
 * `gorename` for renaming variables, functions, and so on in a type-safe way
+
+---
+
+-> # Go: 1.18 <-
+
+Major features
+
+* Type Parameters Proposal aka Generics. Not for this session.
+* Easy to use test fuzzying.
+* `any` is an alias (predeclared identifier) for `interface{}`
+* `comparable` predeclared identifier denoting use of `==`
+* `net/netip.Addr` is more efficient and comparable `net.IP`
+* Improvements in modules tooling (`go get`, `go mod`)
+* `gofmt` is significantly faster (a feature moved from `go fmt`)
+* Build info embedded into binaries and accessible via `debug/buildinfo`.
+* The runtime returns memory to OS more aggresively.
 
 ---
 
