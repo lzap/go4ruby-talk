@@ -323,15 +323,20 @@ Literally ARE constants.
 
 ```
 const constant := 1
+```
 
+There are no enums tho just like in Ruby (modules are used instead):
+
+```
 const (
 	WARN = iota
 	ERR = iota
+	_ = iota
 	FATAL = iota
 )
 ```
 
-The first sentence is shown by default by `go doc` tool.
+Some blocks are done with parenthesis.
 
 ---
 
@@ -346,6 +351,9 @@ printf "A number: %d\n", n
 
 -> # Go: printing <-
 
+Built-in `print` and `println` are not recommended for use, also they print to
+STDERR. Use only for debugging to avoid importing `fmt` package.
+
 ```
 fmt.Printf("Hello %d\n", 23)
 fmt.Fprint(os.Stdout, "Hello ", 23, "\n")
@@ -353,11 +361,12 @@ fmt.Println("Hello", 23)
 fmt.Println(fmt.Sprint("Hello ", 23))
 ```
 
-The first sentence is shown by default by `go doc` tool.
-
 ---
 
 -> # Go: structs <-
+
+A user-defined type that allows to combine items of possibly different types
+into a single type. They are subject of memory alignment.
 
 ```
 type Vertex struct {
@@ -369,9 +378,7 @@ v.X = 1
 v.Y = 1
 ```
 
-There are no constructors, memory is guaranteed to be zeroes.  However,
-`make()` does not return zeroed memory it performs explicit initialization of
-maps, slices and channels.
+There are no constructors, memory is guaranteed to be zeroes.
 
 ---
 
@@ -397,8 +404,6 @@ if obj.Name() == nil {
 	obj.SetName("Lukas")
 }
 ```
-
-Can be also: `v := &Vertex{1, 1}`
 
 ---
 
@@ -431,6 +436,9 @@ slice := make([]int, 5, 10)
 newArray := array
 passingIsCopy(newArray) // anoter copy
 ```
+
+Compare `make()` to `new()`, the former performs explicit initialization.
+maps, slices and channels.
 
 Function `append` enlarges capacity if needed.
 
@@ -525,8 +533,6 @@ c := Command(s...)
 
 append, cap, close, complex, copy, delete, imag, len, make, new, panic, print,
 println, real, recover
-
-Don't use: print, println they might be removed in future versions, also they print to STDERR!
 
 ---
 
