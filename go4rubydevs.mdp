@@ -4,9 +4,7 @@
 
 -> # Go for Ruby developers
 
-I watched 200+ hours of Go talks so you don't have to.
-
-A talk about different concepts in Ruby and Go.
+Different concepts in Ruby and Go.
 
 Assumptions:
 
@@ -37,7 +35,8 @@ Language background struggle:
 
 -> # Go for Ruby developers
 
-Go is exactly the opposite of Ruby
+Go is different.
+Go is exactly the opposite of Ruby in many ways.
 
 ---
 
@@ -112,6 +111,60 @@ fully backward-compatible change.)
 * union type
 * generics (until 1.18)
 * others
+
+---
+
+-> # Ruby: installation and multiple versions <-
+
+As devs, we typically need multiple versions. Solution:
+
+* rvm
+* rbenv
+
+```
+# rbenv install 2.7.1
+# rbenv global 2.7.1
+# ruby --version
+2.7.1
+```
+
+---
+
+-> # Go: installation and multiple versions <-
+
+Installation is suggested from the official binaries:
+
+```
+# wget https://go.dev/dl/go1.17.8.linux-amd64.tar.gz
+# tar -C /usr/local -xzf go1.17.8.linux-amd64.tar.gz
+# export PATH=$PATH:/usr/local/go/bin
+```
+
+---
+
+-> # Go: installation and multiple versions <-
+
+Multiple versions:
+
+```
+# go install golang.org/dl/go1.18@latest
+# export PATH=$PATH:$HOME/go/bin
+# go1.18 download
+```
+
+There are projects like 'goenv' or 'govm' as well.
+
+---
+
+-> # Go: removal <-
+
+Cleanup is easy:
+
+```
+# rm -rf /usr/local/bin/go
+# rm -rf $HOME/go
+# rm -rf $HOME/sdk
+```
 
 ---
 
@@ -438,15 +491,17 @@ Function overloading is not possible, you cannot define `swap` with different ar
 
 -> # Ruby: optional or named arguments <-
 
+Ruby is very expressive here:
+
 ```
-def method(optional*)
-  optional.first
-  optional.second
+def method(*args, **kwargs)
 end
 
-def method(name:, age:)
-  puts name
+def named_args(name:, age:)
 end
+
+a = ["one", "two"]
+method(*a)
 ```
 
 ---
@@ -456,14 +511,12 @@ end
 Nothing like that in Go, except variadic (represented as array):
 
 ```
-func greet(who ...string) {
-	// ...
-}
+func Command(name string, arg ...string) *Cmd
 
-greet("Joe", "Luke", "Andrew")
+c := Command("/usr/bin/echo", "What", "is", "up")
 
-s := []string{"James", "Jones"}
-greet(s...)
+s := []string{"/usr/bin/cat", "/etc/passwd"}
+c := Command(s...)
 ```
 
 ---
@@ -1633,6 +1686,62 @@ Major features
 * `gofmt` is significantly faster (a feature moved from `go fmt`)
 * Build info embedded into binaries and accessible via `debug/buildinfo`.
 * The runtime returns memory to OS more aggresively.
+
+---
+
+-> # Go: Type Parameters <-
+
+```
+func Sum[T int32 | int64 | float32](m ...T) T {
+	var s T
+	for _, v := range m {
+		s += v
+	}
+	return s
+}
+
+Sum(1, 2, 3, 4)
+Sum(1.0, 2.0, 3.0, 4.0)
+// Sum(1, 1.0) // not possible
+```
+
+---
+
+-> # Go: Type Parameters <-
+
+```
+import "golang.org/x/exp/constraints"
+
+func Sum[T constants.Integer](m ...T) T {
+	var s T
+	for _, v := range m {
+		s += v
+	}
+	return s
+}
+```
+
+---
+
+-> # Go: Type Parameters <-
+
+```
+type Ordered interface {
+	Integer | Float | ~string
+}
+
+type Signed interface {
+	~int | ~int8 | ~int16 | ~int32 | ~int64
+}
+
+// comparable + any (predeclared identifiers)
+```
+
+Operator '~' is for underlying types ("aliases"):
+
+```
+type MyInt int
+```
 
 ---
 
